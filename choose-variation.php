@@ -2,7 +2,7 @@
 /*
 Plugin Name: Choose Variation
 description: Choose variation on checkout page
-Version: 0.5
+Version: 0.6
 Author: Sandi Rosyandi
 License: GPL2
 */
@@ -47,7 +47,7 @@ add_action('wp_head', function () {
         
         .checkout-attribute-radio input {
             margin-right: 5px;
-			position: static !important;
+            position: static !important;
         }
         
         .wfacp-order-summary-label, .wfacp_elementor_mini_cart_widget, .wfacp_template_9_cart_item_details {
@@ -113,10 +113,10 @@ add_shortcode('choose-variation', function () {
     
     $prices = [];
     foreach ($product->get_available_variations() as $variation) {
-		$quantity = get_post_meta($variation['variation_id'], 'custom_quantity', true);
-		if (!$quantity) {
-			$quantity = 1;
-		}
+        $quantity = get_post_meta($variation['variation_id'], 'custom_quantity', true);
+        if (!$quantity) {
+            $quantity = 1;
+        }
         $prices[$variation['attributes']['attribute_deal']] = $variation['display_price'] * $quantity;
     }
 ?>
@@ -333,23 +333,25 @@ add_action('wp_footer', function () {
             $('.checkout-attribute-radio-item input:checked').trigger('click');
             $('body').trigger('update_checkout');
         }); 
-		
-		function submitAttribute () {
-			var $ = jQuery;
-			var url = $('#checkout-attribute').data('url');
-			var data = $('#checkout-attribute').find('input, select, textarea').serialize();
-			$.ajax({
-				url: url,
-					type: 'POST',
-					data: data,
-					dataType: 'json',
-					success: function (response) {
-						if (response.status == 'success') {
-							$('body').trigger('update_checkout');
-						}
-				}
-			});
-		}
+        
+        function submitAttribute () {
+            var $ = jQuery;
+            var url = $('#checkout-attribute').data('url');
+            var data = $('#checkout-attribute').find('input, select, textarea').serialize();
+            $('#place_order').attr('disabled', 'disabled');
+            $.ajax({
+                url: url,
+                    type: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.status == 'success') {
+                            $('body').trigger('update_checkout');
+                        }
+                        $('#place_order').removeAttr('disabled');
+                }
+            });
+        }
     </script>       
 <?php
 });
@@ -395,9 +397,9 @@ function checkout_attribute () {
                 }
             }
             $quantity = get_post_meta($variation['variation_id'], 'custom_quantity', true);
-			if (!$quantity) {
-				$quantity = 1;
-			}
+            if (!$quantity) {
+                $quantity = 1;
+            }
             $woocommerce->cart->add_to_cart($productId, $quantity, $variation['variation_id']);
             echo json_encode([
                 'status' => 'success',
@@ -615,27 +617,27 @@ add_action('wp_ajax_custom_heading', function () {
 });
 
 add_action('woocommerce_variation_options_pricing', function ($loop, $variationData, $variation) {
-	$quantity = get_post_meta($variation->ID, 'custom_quantity', true);
+    $quantity = get_post_meta($variation->ID, 'custom_quantity', true);
 ?>
-	<p class="form-field form-row form-row-first">
-		<label>Quantity</label>
-		<input type="text" class="short" name="custom_quantity[<?php echo $loop ?>]" value="<?php echo $quantity ?>" />
-	</p>		
+    <p class="form-field form-row form-row-first">
+        <label>Quantity</label>
+        <input type="text" class="short" name="custom_quantity[<?php echo $loop ?>]" value="<?php echo $quantity ?>" />
+    </p>        
 <?php
 }, 10, 3);
 
 add_action('woocommerce_save_product_variation', function ($variationId, $loop) {
-	if (isset($_POST['custom_quantity'][$loop])) {
-		$quantity = $_POST['custom_quantity'][$loop];
-		update_post_meta($variationId, 'custom_quantity', $quantity);	
-	}
+    if (isset($_POST['custom_quantity'][$loop])) {
+        $quantity = $_POST['custom_quantity'][$loop];
+        update_post_meta($variationId, 'custom_quantity', $quantity);   
+    }
 }, 10, 2);
 
 add_action('woocommerce_checkout_create_order', function ($order) {
-	foreach ($order->get_items() as $item) {
-		$names = explode('-', $item->get_name());
-		$item->set_name(trim($names[0]));
-		$item->save();	
-	}
-	$order->save();
+    foreach ($order->get_items() as $item) {
+        $names = explode('-', $item->get_name());
+        $item->set_name(trim($names[0]));
+        $item->save();  
+    }
+    $order->save();
 });
