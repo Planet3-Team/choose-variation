@@ -84,7 +84,7 @@ add_action('wp_head', function () {
             top: -90px;
             transform: rotate(40deg);
         }
-    </stye>
+    </style>
 <?php
 });
 
