@@ -2,7 +2,7 @@
 /*
 Plugin Name: Choose Variation
 description: Choose variation on checkout page
-Version: 0.6
+Version: 0.7
 Author: Sandi Rosyandi
 License: GPL2
 */
