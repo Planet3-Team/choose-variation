@@ -2,7 +2,7 @@
 /*
 Plugin Name: Choose Variation
 description: Choose variation on checkout page
-Version: 0.7
+Version: 0.8
 Author: Sandi Rosyandi
 License: GPL2
 */
@@ -328,6 +328,21 @@ add_action('wp_footer', function () {
             
             $('.checkout-attribute-select').change(function () {
                 submitAttribute();;
+            });
+            
+            $(document).ajaxComplete(function () {
+                if ($('input[name="deal"]').length) {
+                    var dealChecked = false;
+                    $('input[name="deal"]').each(function () {
+                        if ($(this).is(':checked')) {
+                            dealChecked = true;
+                        }
+                    });
+                    
+                    if (!dealChecked) {
+                        $('#place_order').attr('disabled', 'disabled')
+                    }
+                }
             });
             
             $('.checkout-attribute-radio-item input:checked').trigger('click');
