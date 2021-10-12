@@ -110,6 +110,10 @@ add_shortcode('choose-variation', function () {
     
     $swatches = get_post_meta($productId, 'th_custom_attribute_settings', true);
     $defaultAttributes = $product->get_default_attributes();
+
+    if (!isset($defaultAttributes['deal'])) {
+        $defaultAttributes['deal'] = '';
+    }
     
     $prices = [];
     foreach ($product->get_available_variations() as $variation) {
